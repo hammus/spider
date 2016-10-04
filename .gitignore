@@ -1,0 +1,8 @@
+crawls/
+*.json
+*.xlsx
+Carma.txt
+log.txt
+*.csv
+*.html
+*.txt
