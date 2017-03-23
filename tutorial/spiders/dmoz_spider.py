@@ -24,9 +24,9 @@ class StarNowItem(scrapy.Item):
 
 class StarNowSpider(scrapy.Spider):
     name = "starnow"
-    allowed_domains = ["starnow.com.au"]
+    allowed_domains = ["starnow.co.uk"]
     start_urls = [
-        "http://www.starnow.com.au/talent/australia/new-south-wales/?gender=f"
+        "https://www.starnow.co.uk/talent/uk/?gender=f"
         ]
 
     def parse(self, response):
