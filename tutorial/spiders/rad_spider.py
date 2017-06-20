@@ -40,7 +40,7 @@ class RADSpider(scrapy.Spider):
     name = "rad"
     allowed_domains = ["rentadressaustralia.com"]
     start_urls = [
-        "http://rentadressaustralia.com/browse/Dresses/?page=96"
+        "http://rentadressaustralia.com/browse/Dresses/?page=103"
         ]
 
     def parse(self, response):
@@ -62,8 +62,6 @@ class RADSpider(scrapy.Spider):
             return response.xpath(query).extract()
 
 
-        # catNodes = response.xpath("//table[@id = 'ctl00_cphMain_physicalDetails_memberAttributes']//td")
-# //*[@id="summary"]/div/div/div[1]/dl/dd[6]/text() //*[@id="summary"]/div/div/div[1]/dl/dd[9]/span
         item = RADItem()
         item["name"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[1]/h4/text()")).strip()
         item["email"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[4]/span/a/@href")).strip()

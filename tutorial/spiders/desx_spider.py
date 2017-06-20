@@ -2,6 +2,7 @@ import scrapy
 import logging
 from scrapy_splash import SplashRequest
 from scrapy.utils.log import configure_logging
+from scrapy.selector import Selector
 
 try:
     from HTMLParser import HTMLParser
@@ -14,24 +15,20 @@ h = HTMLParser()
 # logger.setLevel(logging.DEBUG)
 
 class DSXItem(scrapy.Item):
-    name = scrapy.Field()
-    email = scrapy.Field()
-    facebook = scrapy.Field()
-    instagram = scrapy.Field()
-    phone = scrapy.Field()
-    brand_or_designer = scrapy.Field()
-    item_name = scrapy.Field()
-    city = scrapy.Field()
-    post_code = scrapy.Field()
-    street_address = scrapy.Field()
-    labeled_size = scrapy.Field()
+    dress_brand = scrapy.Field()
+    dress_name = scrapy.Field()
+    rental_price = scrapy.Field()
     rrp = scrapy.Field()
-    hire_price = scrapy.Field()
-    best_fit_size = scrapy.Field()
-    item_views = scrapy.Field()
-    date_posted = scrapy.Field()
-    description = scrapy.Field()
-    rad_url = scrapy.Field()
+    size = scrapy.Field()
+    rental_period_days = scrapy.Field()
+    profile_url = scrapy.Field()
+    location_suburb = scrapy.Field()
+    location_state = scrapy.Field()
+    shipping_details = scrapy.Field()
+    labeled_size = scrapy.Field()
+    url = scrapy.Field()
+
+base_url = "https://designerex.com.au"
 
 
 
@@ -39,6 +36,7 @@ class DSXSpider(scrapy.Spider):
 
     name = "dsx"
     allowed_domains = ["designerex.com.au"]
+
     start_urls = [
         "https://designerex.com.au/search?utf8=%E2%9C%93&designer_brand=&size=&target_date=&target_date_selector="
         ]
@@ -47,49 +45,31 @@ class DSXSpider(scrapy.Spider):
         for url in self.start_urls:
             yield SplashRequest(url, self.parse, args={'wait': 0.5})
 
-    def parse(self, response):
-        for a_next in response.xpath('//li[@class="pagination_next"]/a[@rel="next"]/@href').extract():
-            print a_next
-        # for img in response.css("div.item a")[1:]:
-        #     print img.xpath('@href').extract()
 
-    # def parse(self, response):
-    #     for href in response.xpath("//div[@class='thumbnail']/div[@class='caption']/h1/a/@href").extract():
-    #         yield scrapy.Request(response.urljoin(href), callback=self.parse_details)
-    #
-    #     s = h.unescape(response.xpath("//a[@class='nextPageSelector']/@href").extract_first())
-    #     next_page = "".join(s.split())
-    #     print next_page
-    #     # print next_page
-    #     if next_page is not None:
-    #         next_page = response.urljoin(next_page)
-    #         yield scrapy.Request(next_page, callback=self.parse)
-    #
-    #
-    #
-    # def parse_details(self, response):
-    #     def extract_xpath(nodes, query):
-    #         return response.xpath(query).extract()
-    #
-    #
-    #     item = RADItem()
-    #     item["name"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[1]/h4/text()")).strip()
-    #     item["email"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[4]/span/a/@href")).strip()
-    #     item["phone"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[3]/text()")).strip()
-    #     item["facebook"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[2]/a[1]/@href")).strip()
-    #     item["instagram"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[2]/a[2]/@href")).strip()
-    #     item["item_name"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[2]/a[2]/@href")).strip()
-    #     item["brand_or_designer"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[1]/text()[1]")).strip()
-    #     item["city"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[3]/text()[1]")).strip()
-    #     item["rad_url"] = response.url
-    #     item["post_code"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[5]/text()[1]")).strip()
-    #     item["street_address"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[6]/text()")).strip()
-    #     item["labeled_size"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[7]/text()[1]")).strip()
-    #     item["rrp"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[8]/span/text()")).strip()
-    #     item["hire_price"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[9]/span/text()")).strip()
-    #     item["best_fit_size"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[11]/text()[1]")).strip()
-    #     item["item_views"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[13]/text()")).strip()
-    #     item["date_posted"] = ' '.join(extract_xpath(response, "//*[@id='summary']/div/div/div[1]/dl/dd[14]/text()")).strip()
-    #     item["description"] = ' '.join(extract_xpath(response, "//*[@id='Description']/div/div/p[1]/text()")).strip()
-    #
-    #     yield item
+
+    def parse(self, response):
+        for item_url in response.css('div.item > a').xpath('@href').extract():
+            yield SplashRequest(base_url + item_url, self.parse_item, args={'wait': 0.5})
+
+        a_next = response.css('a[rel="next"]').xpath('@href').extract_first()
+        if a_next is not None:
+            next_page = response.urljoin(a_next)
+            yield SplashRequest(next_page, self.parse, args={'wait': 0.5})
+
+    def parse_item(self, response):
+        item = DSXItem()
+        item["dress_brand"] = response.css('h3#dress_brand::text').extract()
+        item["dress_name"] = response.css('div.dress_name::text').extract_first()
+        item["rental_price"] = response.css('span#rental_price_::text').extract()
+        item["rrp"] = response.css('div.rrp::text').extract_first().split("$")[1]
+        _size = response.css('input#reservation_size').xpath('@value').extract_first()
+        if _size is not None and _size.isdigit():
+            item["size"] = int(_size)
+        else:
+            item["size"] = "Not Listed"
+        item["profile_url"] = response.css('a#profile_image').xpath('@href').extract()
+        item["location_suburb"] = response.css('span.dress_user_area.user_area > div::text').extract_first()
+        item["location_state"] = response.css('span.dress_user_area.user_area > div > span.spacer5left::text').extract_first()
+        item["rental_period_days"] = response.css('input#reservation_rental_period').xpath('@value').extract_first()
+        item["url"] = response.url
+        yield item
