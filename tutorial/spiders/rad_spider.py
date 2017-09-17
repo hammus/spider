@@ -40,7 +40,7 @@ class RADSpider(scrapy.Spider):
     name = "rad"
     allowed_domains = ["rentadressaustralia.com"]
     start_urls = [
-        "http://rentadressaustralia.com/browse/Dresses/?page=96"
+        "http://rentadressaustralia.com/browse/Dresses/?page=1"
         ]
 
     def parse(self, response):
@@ -66,7 +66,7 @@ class RADSpider(scrapy.Spider):
 # //*[@id="summary"]/div/div/div[1]/dl/dd[6]/text() //*[@id="summary"]/div/div/div[1]/dl/dd[9]/span
         item = RADItem()
         item["name"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[1]/h4/text()")).strip()
-        item["email"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[4]/span/a/@href")).strip()
+        item["email"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[4]/span/script")).strip()
         item["phone"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[3]/text()")).strip()
         item["facebook"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[2]/a[1]/@href")).strip()
         item["instagram"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[2]/a[2]/@href")).strip()
