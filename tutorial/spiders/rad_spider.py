@@ -50,7 +50,7 @@ class RADSpider(scrapy.Spider):
 
         s = h.unescape(response.xpath("//a[@class='nextPageSelector']/@href").extract_first())
         next_page = "".join(s.split())
-        print next_page
+        print(next_page)
         # print next_page
         if next_page is not None:
             next_page = response.urljoin(next_page)
@@ -73,7 +73,7 @@ class RADSpider(scrapy.Spider):
             email = re.search("^document.write\(\'\<a\shref\=\"mailto:(.*)\"\s\>Send E-mail</a>'\);", urllib.unquote(emailHex)).group(1)
             item["email"] = email
         except AttributeError: 
-            print "No Email Detected"
+            print("No Email Detected")
             item["email"] = ""
         item["phone"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[3]/text()")).strip()
         item["facebook"] = ' '.join(extract_xpath(response, "/html/body/div[3]/div/div[2]/div[2]/div[2]/div/div/div[2]/ul/li[2]/a[1]/@href")).strip()
