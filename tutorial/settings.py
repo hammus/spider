@@ -76,7 +76,7 @@ DOWNLOAD_DELAY = 1.5
 ITEM_PIPELINES = {
    'scrapy.pipelines.images.ImagesPipeline': 1,
 }
-IMAGES_STORE = "./nrl_logos/"
+IMAGES_STORE = "./scaped_assets/"
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

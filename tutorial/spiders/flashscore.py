@@ -45,10 +45,11 @@ class FlashSpider(scrapy.Spider):
         # tournamentIconUri = f"{self.root_domain}/{tournamentIconUriSuffix}"
         # self.image_urls.append(tournamentIconUri)
 
+        item["image_urls"] = []
         teamIconBGStyle = response.xpath("//div[@class='team-logo']/@style").extract_first()
         teamIconUriSuffix = re.search('^background\-image\:\surl\((.*)\)', teamIconBGStyle).group(1)
         iconUrl = f"{self.root_domain}/{teamIconUriSuffix}"
-        item["image_urls"][0] = iconUrl
+        item["image_urls"].append(iconUrl)
         item["icon"] = iconUrl
         item["name"] = response.xpath("//div[@class='team-name']/text()").extract()[0]
 
